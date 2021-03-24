@@ -30,6 +30,38 @@ namespace Issue24216Repro
                 // which conflicts with the [g] that the subselect uses to refer to the Gender table
                 var qstr = q2.ToQueryString();
 
+/* 
+ 
+Actual output
+=============
+DECLARE @__p_0 int = 10;
+
+SELECT (
+    SELECT TOP(1) [g].[Description]
+    FROM [Gender] AS [g]
+    WHERE [g].[Id] = [g].[GenderId]) AS [Gender]
+FROM (
+    SELECT TOP(@__p_0) [m].[PersonId], [m].[Timestamp]
+    FROM [Message] AS [m]
+) AS [t]
+CROSS APPLY [dbo].[GetPersonStatusAsOf]([t].[PersonId], [t].[Timestamp]) AS [g0]
+
+Expected output
+===============
+DECLARE @__p_0 int = 10;
+
+SELECT (
+    SELECT TOP(1) [g].[Description]
+    FROM [Gender] AS [g]
+    WHERE [g].[Id] = [g0].[GenderId]) AS [Gender]   // <<<<<<< DIFFERENCE HERE
+FROM (
+    SELECT TOP(@__p_0) [m].[PersonId], [m].[Timestamp]
+    FROM [Message] AS [m]
+) AS [t]
+CROSS APPLY [dbo].[GetPersonStatusAsOf]([t].[PersonId], [t].[Timestamp]) AS [g0]
+
+*/
+
                 Console.WriteLine(qstr);
             }
 
